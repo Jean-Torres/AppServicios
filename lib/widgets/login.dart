@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motors_up/class/validaciones.dart';
 import 'package:motors_up/peticiones/login.dart';
 import 'package:motors_up/principal.dart';
 import 'package:motors_up/widgets/content_buscador_prin.dart';
@@ -12,10 +13,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  Validaciones validaciones = Validaciones();
   TextEditingController tUsuarioCtrl = TextEditingController();
   TextEditingController tContrasenhaCtrl = TextEditingController();
 
-  GlobalKey formKey = GlobalKey();
+  GlobalKey<FormState> formKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -48,6 +50,7 @@ class _LoginState extends State<Login> {
                         colorFocus: Colors.black,
                         marginInput: 10,
                         controller: tUsuarioCtrl,
+                        validacion: validaciones.camposVacios,
                       ),
                       Inputs(
                         titulo: "Contraseña",
@@ -55,6 +58,7 @@ class _LoginState extends State<Login> {
                         colorFocus: Colors.black,
                         marginInput: 10,
                         controller: tContrasenhaCtrl,
+                        validacion: validaciones.camposVacios,
                       ),
                       Buttons(
                           callback: login,
@@ -76,20 +80,24 @@ class _LoginState extends State<Login> {
   }
 
   void login() async {
+    if (!formKey.currentState!.validate()) return;
     PeticionesUsuarios pu = PeticionesUsuarios();
     var response =
         pu.autenticarUsuario(tUsuarioCtrl.text, tContrasenhaCtrl.text);
 
+    // ignore: prefer_typing_uninitialized_variables
     var token;
     await response.then((value) => token = value);
 
     tUsuarioCtrl.clear();
     tContrasenhaCtrl.clear();
-
-    if (await token["token"] != null) {
-      Route route = MaterialPageRoute(builder: (bc) => const Principal());
-      // // ignore: use_build_context_synchronously
-      Navigator.of(context).push(route);
-    }
+    try {
+      if (await token["token"] != null) {
+        Route route = MaterialPageRoute(builder: (bc) => const Principal());
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).push(route);
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 }

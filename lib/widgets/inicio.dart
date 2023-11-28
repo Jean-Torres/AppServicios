@@ -10,9 +10,9 @@ class Inicio extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(
+        SizedBox(
           height: 260,
-          child: BuscadorPrincipal(),
+          child: BuscadorPrincipal(callback: funcion),
         ),
         const Padding(
           padding: EdgeInsets.all(8.0),

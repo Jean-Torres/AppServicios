@@ -26,12 +26,16 @@ class PeticionesCategoria {
   }
 
   Future<dynamic> getCategorias() async {
-    final response = await http
-        .get(Uri.parse("https://apimovil.onrender.com/api/categorias"));
+    try {
+      final response = await http
+          .get(Uri.parse("https://apimovil.onrender.com/api/categorias"));
 
-    if (response.statusCode == 200) {
-      archivarCategorias(jsonDecode(response.body));
-      return jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        archivarCategorias(jsonDecode(response.body));
+        return jsonDecode(response.body);
+      }
+    } catch (e) {
+      return jsonEncode({"error": "conexion fallida."});
     }
     return null;
   }

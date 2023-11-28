@@ -3,6 +3,7 @@ import 'package:motors_up/class/servicios.dart';
 import 'package:motors_up/widgets/inicio.dart';
 import 'package:motors_up/widgets/menu_lateral.dart';
 import 'package:motors_up/widgets/nuvo_servicio.dart';
+import 'package:motors_up/delegetes/busqueda.dart';
 
 class Principal extends StatefulWidget {
   const Principal({super.key});
@@ -65,6 +66,7 @@ class _PrincipalState extends State<Principal> {
           descriocionServicio: descripcion,
           precioServicio: precio,
           categoriaServicio: categoria,
+          callback: selectDrawerOption,
         );
     }
     return Inicio(funcion: selectDrawerOption);
@@ -80,6 +82,17 @@ class _PrincipalState extends State<Principal> {
           ),
           appBar: AppBar(
             title: const Text("Motors Up"),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  showSearch(
+                      context: context,
+                      delegate: BusquedaServicios(
+                          servicio.getServicio(), selectDrawerOption));
+                },
+                icon: const Icon(Icons.search),
+              ),
+            ],
           ),
           body: SingleChildScrollView(child: buildBody())),
     );

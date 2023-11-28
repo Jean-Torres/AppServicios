@@ -1,5 +1,5 @@
 class Categorias {
-  List<dynamic> _categorias = [];
+  final List<dynamic> _categorias = [];
 
   static Categorias? _instance;
   Categorias._internal();

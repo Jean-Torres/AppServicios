@@ -12,15 +12,17 @@ class ListaServicios extends StatefulWidget {
 
 class _ListaServiciosState extends State<ListaServicios> {
   void setDatos(dynamic element) {
-    Servicios servicio = Servicios();
-
-    servicio.setIdServicio(element["_id"]);
-    servicio.setCodigoServicio(element["codigo"]);
-    servicio.setNombreServicio(element["nombre"]);
-    servicio.setDescripcionServicio(element["descripcion"]);
-    servicio.setPrecioServicio(element["precio"].toString());
-    servicio.setCategoriaServicio(element["categoria"]["nombre"]);
-    servicio.setTituloServicio("Editar Servicio");
+    try {
+      Servicios servicio = Servicios();
+      servicio.setIdServicio(element["_id"]);
+      servicio.setCodigoServicio(element["codigo"]);
+      servicio.setNombreServicio(element["nombre"]);
+      servicio.setDescripcionServicio(element["descripcion"]);
+      servicio.setPrecioServicio(element["precio"].toString());
+      servicio.setCategoriaServicio(element["categoria"]["nombre"]);
+      servicio.setTituloServicio("Editar Servicio");
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   final PeticionesServicios ps = PeticionesServicios();

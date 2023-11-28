@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:motors_up/delegetes/busqueda.dart';
+import 'package:motors_up/class/validaciones.dart';
 
-class BuscadorPrincipal extends StatelessWidget {
-  const BuscadorPrincipal({super.key});
+class BuscadorPrincipal extends StatefulWidget {
+  final Function(String) callback;
+  const BuscadorPrincipal({super.key, required this.callback});
 
+  @override
+  State<BuscadorPrincipal> createState() => _BuscadorPrincipalState();
+}
+
+class _BuscadorPrincipalState extends State<BuscadorPrincipal> {
+  Validaciones validaciones = Validaciones();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -26,19 +33,13 @@ class BuscadorPrincipal extends StatelessWidget {
               child: Row(
                 children: [
                   const Padding(padding: EdgeInsets.all(20.0)),
-                  const Expanded(
+                  Expanded(
                     child: Inputs(
                       titulo: "Search",
                       labelInput: "Search",
                       borderRadius: 30,
+                      validacion: validaciones.camposNumeroTexto,
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      showSearch(
-                          context: context, delegate: BusquedaServicios());
-                    },
-                    icon: const Icon(Icons.search),
                   ),
                   const SizedBox(width: 30),
                 ],
@@ -129,6 +130,7 @@ class Inputs extends StatelessWidget {
   final TextEditingController? controller;
   final bool? soloLectura;
   final VoidCallback? callBack;
+  final String? Function(String?)? validacion;
 
   const Inputs({
     super.key,
@@ -141,6 +143,7 @@ class Inputs extends StatelessWidget {
     this.controller,
     this.soloLectura,
     this.callBack,
+    required this.validacion,
   });
 
   @override
@@ -162,6 +165,7 @@ class Inputs extends StatelessWidget {
                 borderRadius:
                     BorderRadius.all(Radius.circular(borderRadius ?? 10)))),
         keyboardType: tipoInput ?? TextInputType.text,
+        validator: validacion,
       ),
     );
   }

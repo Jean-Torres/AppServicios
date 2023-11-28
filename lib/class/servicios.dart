@@ -6,6 +6,7 @@ class Servicios {
   String _tituloOperacion = "";
   String _codigoServicio = "";
   String _idServicio = "";
+  List<dynamic> _servicios = [];
 
   static Servicios? _instance;
   Servicios._internal();
@@ -43,6 +44,14 @@ class Servicios {
     _idServicio = idServicio;
   }
 
+  void setServicios(dynamic servicio) {
+    _servicios.add(servicio);
+  }
+
+  void resetServicios() {
+    _servicios = [];
+  }
+
   String getNombreServicio() {
     return _nombreServicio;
   }
@@ -69,5 +78,9 @@ class Servicios {
 
   String getIdServicio() {
     return _idServicio;
+  }
+
+  List<dynamic> getServicio() {
+    return _servicios;
   }
 }

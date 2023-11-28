@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:motors_up/class/categorias.dart';
+import 'package:motors_up/class/validaciones.dart';
 import 'package:motors_up/peticiones/cargar_categorias.dart';
 import 'package:motors_up/peticiones/cargar_servicios.dart';
 import 'package:motors_up/widgets/content_buscador_prin.dart';
@@ -13,6 +14,8 @@ class NuevoServicio extends StatefulWidget {
   final String? categoriaServicio;
   final String? titulo;
   final String? codigo;
+  final Function(String)? callback;
+
   const NuevoServicio(
       {super.key,
       this.titulo,
@@ -21,7 +24,8 @@ class NuevoServicio extends StatefulWidget {
       this.precioServicio,
       this.categoriaServicio,
       this.idServicio,
-      this.codigo});
+      this.codigo,
+      this.callback});
 
   @override
   State<NuevoServicio> createState() => _NuevoServicioState();
@@ -35,8 +39,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
 
     jtNombreCtrl.text = widget.nombreServicio ?? "";
     jtDescirpionCtrl.text = widget.descriocionServicio ?? "";
-    jtPrecioCtrl.text = widget.categoriaServicio ?? "";
-    jtCategoriaCtrl.text = widget.categoriaServicio ?? "";
+    jtPrecioCtrl.text = widget.precioServicio ?? "";
+    jtCategoriaCtrl.text = widget.categoriaServicio ?? categorias[0];
     jtIdServicioCtrl.text = widget.idServicio ?? "";
     jtCodigoCtrl.text = widget.codigo ?? "";
   }
@@ -47,6 +51,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
   TextEditingController jtPrecioCtrl = TextEditingController();
   TextEditingController jtCategoriaCtrl = TextEditingController();
   TextEditingController jtCodigoCtrl = TextEditingController();
+  Validaciones validaciones = Validaciones();
+  GlobalKey<FormState> formNuevoRegistro = GlobalKey();
 
   List<String> categorias = [];
 
@@ -80,55 +86,63 @@ class _NuevoServicioState extends State<NuevoServicio> {
           SizedBox(
             width: MediaQuery.of(context).size.width - 50,
             height: 500,
-            child: Form(
-                child: Column(
-              children: [
-                Inputs(
-                  titulo: "Codigo",
-                  labelInput: "codigo",
-                  colorFocus: Colors.black,
-                  borderRadius: 5,
-                  marginInput: 10,
-                  controller: jtCodigoCtrl,
-                  soloLectura: false,
-                ),
-                Inputs(
-                    titulo: "Nombre",
-                    labelInput: "Nombre",
-                    colorFocus: Colors.black,
-                    borderRadius: 5,
-                    marginInput: 10,
-                    controller: jtNombreCtrl),
-                Inputs(
-                  titulo: "descricion",
-                  labelInput: "Descripción",
-                  colorFocus: Colors.black,
-                  borderRadius: 5,
-                  marginInput: 10,
-                  controller: jtDescirpionCtrl,
-                ),
-                Inputs(
-                    titulo: "precio",
-                    labelInput: "Precio",
-                    colorFocus: Colors.black,
-                    borderRadius: 5,
-                    tipoInput: TextInputType.datetime,
-                    controller: jtPrecioCtrl),
-                InputSelect(
-                    categorias: categorias, controllerC: jtCategoriaCtrl),
-                Buttons(
-                  callback: callBack,
-                  backgraundButton: const Color.fromRGBO(144, 202, 249, 1),
-                ),
-                if (widget.titulo != "Nuevo servicio")
-                  Buttons(
-                    callback: eliminarServicio,
-                    backgraundButton: const Color.fromARGB(0, 0, 0, 0),
-                    titulotButton: "Eliminar Servicio",
-                    foregroundButton: Colors.red,
-                  ),
-              ],
-            )),
+            child: SingleChildScrollView(
+              child: Form(
+                  key: formNuevoRegistro,
+                  child: Column(
+                    children: [
+                      Inputs(
+                        titulo: "Codigo",
+                        labelInput: "codigo",
+                        colorFocus: Colors.black,
+                        borderRadius: 5,
+                        marginInput: 10,
+                        controller: jtCodigoCtrl,
+                        soloLectura: false,
+                        validacion: validaciones.camposNumeros,
+                      ),
+                      Inputs(
+                          titulo: "Nombre",
+                          labelInput: "Nombre",
+                          colorFocus: Colors.black,
+                          borderRadius: 5,
+                          marginInput: 10,
+                          controller: jtNombreCtrl,
+                          validacion: validaciones.camposNumeroTexto),
+                      Inputs(
+                        titulo: "descricion",
+                        labelInput: "Descripción",
+                        colorFocus: Colors.black,
+                        borderRadius: 5,
+                        marginInput: 10,
+                        controller: jtDescirpionCtrl,
+                        validacion: validaciones.camposNumeroTexto,
+                      ),
+                      Inputs(
+                          titulo: "precio",
+                          labelInput: "Precio",
+                          colorFocus: Colors.black,
+                          borderRadius: 5,
+                          tipoInput: TextInputType.datetime,
+                          controller: jtPrecioCtrl,
+                          validacion: validaciones.camposNumeros),
+                      InputSelect(
+                          categorias: categorias, controllerC: jtCategoriaCtrl),
+                      Buttons(
+                        callback: callBack,
+                        backgraundButton:
+                            const Color.fromRGBO(144, 202, 249, 1),
+                      ),
+                      if (widget.titulo != "Nuevo servicio")
+                        Buttons(
+                          callback: eliminarServicio,
+                          backgraundButton: const Color.fromARGB(0, 0, 0, 0),
+                          titulotButton: "Eliminar Servicio",
+                          foregroundButton: Colors.red,
+                        ),
+                    ],
+                  )),
+            ),
           )
         ],
       ),
@@ -146,6 +160,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
     };
     PeticionesServicios ps = PeticionesServicios();
     ps.setServicios(datos);
+    setState(() {});
+    widget.callback!("inicio");
   }
 
   void actualizarServicio() async {
@@ -164,7 +180,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
     await response.then((value) => id = value);
 
     if (id != null) {
-      print("se actualizo...");
+      setState(() {});
+      widget.callback!("inicio");
     }
   }
 
@@ -173,6 +190,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
   }
 
   void callBack() {
+    if (!formNuevoRegistro.currentState!.validate()) return;
+
     if (widget.titulo != "Editar Servicio") {
       guardarDatos();
     } else {
@@ -200,6 +219,8 @@ class _NuevoServicioState extends State<NuevoServicio> {
                 PeticionesServicios ps = PeticionesServicios();
                 ps.deleteServicio(widget.idServicio ?? "");
                 Navigator.of(context).pop();
+                setState(() {});
+                widget.callback!("inicio");
               },
             ),
             TextButton(
